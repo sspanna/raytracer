@@ -1,0 +1,9 @@
+# Compiled object files
+*.o
+*.d
+
+# Output
+*.ppm
+
+# Debug and Release directories
+bin/
