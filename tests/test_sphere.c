@@ -104,12 +104,66 @@ void test_sphere_hit_near_root(void)
   printf("test_sphere_hit_near_root passed\n");
 }
 
+void test_sphere_hit_back_face(void)
+{
+  sphere s = {.center = {0, 0, -5}, .radius = 1.0};
+  // Ray starts at the sphere's own center -- guaranteed to be inside it.
+  ray r = {.orig = {0, 0, -5}, .dir = {0, 0, -1}};
+  hit_record rec = {0};
+
+  _Bool hit = sphere_hit(s, r, 0.001, 100.0, &rec);
+
+  assert(hit == 1);
+  // Ray travels outward from the center, so it exits at distance = radius.
+  assert(approx_eq(rec.t, 1.0));
+  assert(rec.front_face == 0); // hit from inside -> back face
+
+  // Geometric invariants still hold regardless of front/back.
+  assert_on_surface(s, rec);
+
+  // The KEY check that catches the exact bug we just fixed: since this is
+  // a back-face hit, the stored normal must point INWARD (toward center),
+  // i.e. opposite the geometric outward normal -- not just "some unit vector."
+  vec3 outward = v3_sdiv(v3_sub(rec.p, s.center), s.radius);
+  assert(approx_eq(rec.normal.x, -outward.x));
+  assert(approx_eq(rec.normal.y, -outward.y));
+  assert(approx_eq(rec.normal.z, -outward.z));
+
+  // Also confirm the "normal always opposes the ray" invariant directly --
+  // this is the actual property set_face_normal is supposed to guarantee.
+  double d = v3_dot(r.dir, rec.normal);
+  assert(d < 0);
+
+  printf("test_sphere_hit_back_face passed\n");
+}
+
+void test_sphere_hit_front_face(void)
+{
+  sphere s = {.center = {0, 0, -5}, .radius = 1.0};
+  ray r = {.orig = {0, 0, 0}, .dir = {0, 0, -1}}; // outside, looking in
+  hit_record rec = {0};
+
+  _Bool hit = sphere_hit(s, r, 0.001, 100.0, &rec);
+
+  assert(hit == 1);
+  assert(rec.front_face == 1); // hit from outside -> front face
+
+  assert_on_surface(s, rec);
+
+  double d = v3_dot(r.dir, rec.normal);
+  assert(d < 0); // normal opposes ray, same invariant, both cases
+
+  printf("test_sphere_hit_front_face passed\n");
+}
+
 int main(void)
 {
   test_hit();
   test_hit_bounds();
   test_hit_miss();
   test_sphere_hit_near_root();
+  test_sphere_hit_front_face();
+  test_sphere_hit_back_face();
   printf("All tests passed.\n");
   return 0;
 }
