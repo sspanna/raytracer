@@ -2,6 +2,8 @@
 #include "vec3.h"
 #include <math.h>
 
+static color camera_ray_color(const ray r, const sphere_list all_spheres);
+
 void camera_render(camera cam, const sphere_list all_spheres)
 {
 
@@ -21,7 +23,7 @@ void camera_render(camera cam, const sphere_list all_spheres)
       vec3 ray_direction = v3_sub(current_pixel, cam.center);
       ray r = (ray){cam.center, ray_direction};
 
-      color pixel_color = ray_color(r, all_spheres);
+      color pixel_color = camera_ray_color(r, all_spheres);
       write_color(stdout, pixel_color);
     }
   }
@@ -61,7 +63,7 @@ void camera_initialize(camera *cam)
   cam->pixel_zero = v3_add(cam->pixel_zero, viewport_upper_left);
 }
 
-color ray_color(const ray r, const sphere_list all_spheres)
+static color camera_ray_color(const ray r, const sphere_list all_spheres)
 {
   hit_record rec;
   if (sphere_list_hit(all_spheres, r, (interval){0, INFINITY}, &rec))

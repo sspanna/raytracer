@@ -1,11 +1,8 @@
 #include "camera.h"
-#include "color.h"
-#include "hit_record.h"
 #include "ray.h"
 #include "sphere_list.h"
 #include "vec3.h"
 #include <math.h>
-#include <stdio.h>
 #include <unistd.h>
 
 // @return t - parameter solution of intersecting point, or -1 for miss
