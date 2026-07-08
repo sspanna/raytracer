@@ -1,10 +1,10 @@
 #include "sphere.h"
 #include "hit_record.h"
+#include "interval.h"
 #include "vec3.h"
 #include <math.h>
 
-_Bool sphere_hit(sphere s, ray r, double ray_tmin, double ray_tmax,
-                 hit_record *rec)
+_Bool sphere_hit(sphere s, ray r, interval ray_t, hit_record *rec)
 {
 
   vec3 oc = v3_sub(s.center, r.orig);
@@ -19,10 +19,10 @@ _Bool sphere_hit(sphere s, ray r, double ray_tmin, double ray_tmax,
   double sqrtd = sqrt(discriminant);
 
   double root = (h - sqrtd) / a;
-  if (root <= ray_tmin || root >= ray_tmax)
+  if (!interval_surrounds(ray_t, root))
   {
     root = (h + sqrtd) / a;
-    if (root <= ray_tmin || root >= ray_tmax)
+    if (!interval_surrounds(ray_t, root))
     {
       return 0;
     }

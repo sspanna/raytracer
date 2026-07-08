@@ -4,7 +4,7 @@
 
 typedef vec3 color;
 
-static void write_color(FILE *out, const color pixel_color)
+static inline void write_color(FILE *out, const color pixel_color)
 {
   int rbyte = (int)(255.999 * pixel_color.x);
   int gbyte = (int)(255.999 * pixel_color.y);

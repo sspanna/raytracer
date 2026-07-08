@@ -1,4 +1,5 @@
 #include "sphere_list.h"
+#include "interval.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -35,17 +36,16 @@ void sphere_list_free(sphere_list *list)
   list->capacity = 0;
 }
 
-_Bool sphere_list_hit(sphere_list list, ray r, double ray_tmin, double ray_tmax,
-                      hit_record *rec)
+_Bool sphere_list_hit(sphere_list list, ray r, interval ray_t, hit_record *rec)
 {
   hit_record current_rec;
   _Bool hit_anything = 0;
-  double closest_t = ray_tmax;
+  double closest_t = ray_t.max;
 
   for (int i = 0; i < list.count; i++)
   {
     sphere s = list.items[i];
-    if (sphere_hit(s, r, ray_tmin, closest_t, &current_rec))
+    if (sphere_hit(s, r, (interval){ray_t.min, closest_t}, &current_rec))
     {
       hit_anything = 1;
       closest_t = current_rec.t;

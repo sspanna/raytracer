@@ -42,7 +42,7 @@ void test_hit(void)
   };
 
   hit_record rec = {0};
-  if (sphere_hit(s, r, 0, 10, &rec))
+  if (sphere_hit(s, r, (interval){0, 10}, &rec))
   {
     assert(rec.t == 4.0);
     assert(rec.p.z == -4.0);
@@ -66,7 +66,7 @@ void test_hit_bounds(void)
   };
 
   hit_record rec = {0};
-  _Bool hit = sphere_hit(s, r, 7, 10, &rec);
+  _Bool hit = sphere_hit(s, r, (interval){7, 10}, &rec);
   assert(hit == 0);
   printf("test sphere hit 2 - bounds passed\n");
 }
@@ -84,7 +84,7 @@ void test_hit_miss(void)
   };
 
   hit_record rec = {0};
-  _Bool hit = sphere_hit(s, r, 7, 10, &rec);
+  _Bool hit = sphere_hit(s, r, (interval){7, 10}, &rec);
   assert(hit == 0);
   printf("test sphere miss 3 - miss passed\n");
 }
@@ -95,7 +95,7 @@ void test_sphere_hit_near_root(void)
   ray r = {.orig = {0, 0, 0}, .dir = {0, 0, -1}};
   hit_record rec = {0};
 
-  _Bool hit = sphere_hit(s, r, 1.0, 5.0, &rec);
+  _Bool hit = sphere_hit(s, r, (interval){1.0, 5.0}, &rec);
 
   assert(hit == 1);
   assert(approx_eq(rec.t, 4.0));
@@ -111,7 +111,7 @@ void test_sphere_hit_back_face(void)
   ray r = {.orig = {0, 0, -5}, .dir = {0, 0, -1}};
   hit_record rec = {0};
 
-  _Bool hit = sphere_hit(s, r, 0.001, 100.0, &rec);
+  _Bool hit = sphere_hit(s, r, (interval){0.001, 100.0}, &rec);
 
   assert(hit == 1);
   // Ray travels outward from the center, so it exits at distance = radius.
@@ -143,7 +143,7 @@ void test_sphere_hit_front_face(void)
   ray r = {.orig = {0, 0, 0}, .dir = {0, 0, -1}}; // outside, looking in
   hit_record rec = {0};
 
-  _Bool hit = sphere_hit(s, r, 0.001, 100.0, &rec);
+  _Bool hit = sphere_hit(s, r, (interval){0.001, 100.0}, &rec);
 
   assert(hit == 1);
   assert(rec.front_face == 1); // hit from outside -> front face

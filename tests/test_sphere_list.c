@@ -12,7 +12,7 @@ void test_sphere_list_empty(void)
   ray r = {.orig = {0, 0, 0}, .dir = {0, 0, -1}};
   hit_record rec = {0};
 
-  _Bool hit = sphere_list_hit(list, r, 0.001, 100.0, &rec);
+  _Bool hit = sphere_list_hit(list, r, (interval){0.001, 100.0}, &rec);
 
   assert(hit == 0);
   sphere_list_free(&list);
@@ -27,7 +27,7 @@ void test_sphere_list_single_hit(void)
   ray r = {.orig = {0, 0, 0}, .dir = {0, 0, -1}};
   hit_record rec = {0};
 
-  _Bool hit = sphere_list_hit(list, r, 0.001, 100.0, &rec);
+  _Bool hit = sphere_list_hit(list, r, (interval){0.001, 100.0}, &rec);
 
   assert(hit == 1);
   assert(approx_eq(rec.t, 4.0)); // sphere surface at distance 5-1=4
@@ -45,7 +45,7 @@ void test_sphere_list_single_miss(void)
   ray r = {.orig = {0, 0, 0}, .dir = {0, 0, -1}};
   hit_record rec = {0};
 
-  _Bool hit = sphere_list_hit(list, r, 0.001, 100.0, &rec);
+  _Bool hit = sphere_list_hit(list, r, (interval){0.001, 100.0}, &rec);
 
   assert(hit == 0);
   sphere_list_free(&list);
@@ -65,7 +65,7 @@ void test_sphere_list_closest_wins_near_first(void)
   ray r = {.orig = {0, 0, 0}, .dir = {0, 0, -1}};
   hit_record rec = {0};
 
-  _Bool hit = sphere_list_hit(list, r, 0.001, 100.0, &rec);
+  _Bool hit = sphere_list_hit(list, r, (interval){0.001, 100.0}, &rec);
 
   assert(hit == 1);
   assert(approx_eq(rec.t, 4.0)); // must report the NEAR sphere, not the far one
@@ -88,7 +88,7 @@ void test_sphere_list_closest_wins_far_first(void)
   ray r = {.orig = {0, 0, 0}, .dir = {0, 0, -1}};
   hit_record rec = {0};
 
-  _Bool hit = sphere_list_hit(list, r, 0.001, 100.0, &rec);
+  _Bool hit = sphere_list_hit(list, r, (interval){0.001, 100.0}, &rec);
 
   assert(hit == 1);
   assert(approx_eq(rec.t,
