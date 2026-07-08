@@ -1,28 +1,9 @@
 #include "camera.h"
-#include "ray.h"
 #include "sphere_list.h"
 #include "vec3.h"
-#include <math.h>
 #include <unistd.h>
 
 // @return t - parameter solution of intersecting point, or -1 for miss
-double hit_sphere(point3 center, double radius, ray r)
-{
-  vec3 oc = v3_sub(center, r.orig);
-  double a = v3_dot(r.dir, r.dir);
-  double h = v3_dot(r.dir, oc);
-  double c = v3_dot(oc, oc) - radius * radius;
-  double discriminant = h * h - a * c;
-  if (discriminant < 0)
-  {
-    return -1.0;
-  }
-  else
-  {
-    return (h - sqrt(discriminant)) / a;
-  }
-}
-
 int main(void)
 {
   // make some spheres
