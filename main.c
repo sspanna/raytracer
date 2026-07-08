@@ -1,10 +1,11 @@
 #include "color.h"
+#include "hit_record.h"
 #include "ray.h"
+#include "sphere_list.h"
 #include "vec3.h"
 #include <math.h>
 #include <stdio.h>
 #include <unistd.h>
-
 // @return t - parameter solution of intersecting point, or -1 for miss
 double hit_sphere(point3 center, double radius, ray r)
 {
@@ -23,17 +24,15 @@ double hit_sphere(point3 center, double radius, ray r)
   }
 }
 
-color ray_color(ray r)
+color ray_color(ray r, sphere_list all_spheres)
 {
-  point3 circle_center = (point3){0, 0, -1};
-  double t = hit_sphere(circle_center, 0.5, r);
-  if (t > 0.0)
+  hit_record rec;
+  if (sphere_list_hit(all_spheres, r, 0, INFINITY, &rec))
   {
-    vec3 normal = v3_normalize(v3_sub(ray_at(r, t), circle_center));
-    color color_at = (color){normal.x + 1, normal.y + 1, normal.z + 1};
-    color_at = v3_smul(color_at, 0.5);
-    return color_at;
+    return v3_smul(
+        (color){rec.normal.x + 1, rec.normal.y + 1, rec.normal.z + 1}, 0.5);
   }
+  // background
   vec3 unit_direction = v3_normalize(r.dir);
   double alpha = 0.5 * (unit_direction.y + 1.0);
   color white = (color){1, 1, 1};
@@ -49,6 +48,25 @@ int main(void)
   // calculate image height based on aspect ratio
   int image_height = (int)(image_width / aspect_ratio);
   image_height = (image_height < 1) ? 1 : image_height;
+
+  // make some spheres
+  sphere sphere1 = (sphere){
+      (point3){0, 0, -1},
+      0.5,
+  };
+  sphere sphere2 = (sphere){
+      (point3){0, -100.5, -1},
+      100,
+  };
+  sphere sphere3 = (sphere){
+      (point3){2, 1, -3},
+      0.5,
+  };
+
+  sphere_list all_spheres = sphere_list_new(10);
+  sphere_list_add(&all_spheres, sphere1);
+  sphere_list_add(&all_spheres, sphere2);
+  sphere_list_add(&all_spheres, sphere3);
 
   // Camera
 
@@ -93,7 +111,7 @@ int main(void)
       vec3 ray_direction = v3_sub(current_pixel, camera_center);
       ray r = (ray){camera_center, ray_direction};
 
-      color pixel_color = ray_color(r);
+      color pixel_color = ray_color(r, all_spheres);
       write_color(stdout, pixel_color);
     }
   }
