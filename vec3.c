@@ -1,4 +1,5 @@
 #include "vec3.h"
+#include "utils.h"
 #include <math.h>
 #include <stdio.h>
 
@@ -67,3 +68,47 @@ double v3_length(vec3 u) { return sqrt(v3_length_squared(u)); }
 vec3 v3_normalize(vec3 u) { return v3_sdiv(u, v3_length(u)); }
 
 void v3_print(vec3 u) { printf("x: %f, y: %f, z: %f\n", u.x, u.y, u.z); }
+
+vec3 v3_random()
+{
+  return (vec3){
+      random_double(),
+      random_double(),
+      random_double(),
+  };
+}
+
+vec3 v3_random_between(double min, double max)
+{
+  return (vec3){
+      random_double_between(min, max),
+      random_double_between(min, max),
+      random_double_between(min, max),
+  };
+}
+
+vec3 v3_random_unit_vector()
+{
+  while (1)
+  {
+    vec3 v = v3_random_between(-1, 1);
+    double len = v3_length(v);
+    if (1e-160 < len && len <= 1)
+    {
+      return v3_sdiv(v, len);
+    }
+  }
+}
+
+vec3 v3_random_on_hemisphere(vec3 normal)
+{
+  vec3 v = v3_random_unit_vector();
+  if (v3_dot(v, normal) > 0.0)
+  {
+    return v;
+  }
+  else
+  {
+    return v3_neg(v);
+  }
+}

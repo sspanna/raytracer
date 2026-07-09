@@ -88,8 +88,12 @@ static color camera_ray_color(const ray r, const sphere_list all_spheres)
   hit_record rec;
   if (sphere_list_hit(all_spheres, r, (interval){0, INFINITY}, &rec))
   {
-    return v3_smul(
-        (color){rec.normal.x + 1, rec.normal.y + 1, rec.normal.z + 1}, 0.5);
+    vec3 d = v3_random_on_hemisphere(rec.normal);
+    ray bouncing_ray = (ray){
+        rec.p,
+        d,
+    };
+    return v3_smul(camera_ray_color(bouncing_ray, all_spheres), 0.5);
   }
   // background
   vec3 unit_direction = v3_normalize(r.dir);

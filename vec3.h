@@ -25,3 +25,11 @@ double v3_length(vec3 u);
 double v3_length_squared(vec3 u);
 
 void v3_print(vec3 u);
+
+vec3 v3_random();
+
+vec3 v3_random_between(double min, double max);
+
+vec3 v3_random_unit_vector();
+
+vec3 v3_random_on_hemisphere(vec3 normal);
