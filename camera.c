@@ -4,7 +4,8 @@
 #include "vec3.h"
 #include <math.h>
 
-static color camera_ray_color(const ray r, const sphere_list all_spheres);
+static color camera_ray_color(const ray r, const sphere_list all_spheres,
+                              int depth);
 
 vec3 camera_sample_square()
 {
@@ -41,7 +42,8 @@ void camera_render(camera cam, const sphere_list all_spheres)
       for (int sample = 0; sample < cam.samples_per_pixel; sample++)
       {
         ray r = camera_get_ray(cam, i, j);
-        pixel_color = v3_add(pixel_color, camera_ray_color(r, all_spheres));
+        pixel_color = v3_add(pixel_color,
+                             camera_ray_color(r, all_spheres, cam.max_depth));
       }
       write_color(stdout, v3_smul(pixel_color, (1.0 / cam.samples_per_pixel)));
     }
@@ -54,6 +56,7 @@ void camera_initialize(camera *cam)
   cam->samples_per_pixel = 10;
   cam->image_height = (int)(cam->image_width / cam->aspect_ratio);
   cam->image_height = (cam->image_height < 1) ? 1 : cam->image_height;
+  cam->max_depth = 10;
 
   double focal_length = 1.0;
   double viewport_height = 2.0;
@@ -83,8 +86,13 @@ void camera_initialize(camera *cam)
   cam->pixel_zero = v3_add(cam->pixel_zero, viewport_upper_left);
 }
 
-static color camera_ray_color(const ray r, const sphere_list all_spheres)
+static color camera_ray_color(const ray r, const sphere_list all_spheres,
+                              int depth)
 {
+  if (depth < 0)
+  {
+    return (color){0, 0, 0};
+  }
   hit_record rec;
   if (sphere_list_hit(all_spheres, r, (interval){0, INFINITY}, &rec))
   {
@@ -93,7 +101,7 @@ static color camera_ray_color(const ray r, const sphere_list all_spheres)
         rec.p,
         d,
     };
-    return v3_smul(camera_ray_color(bouncing_ray, all_spheres), 0.5);
+    return v3_smul(camera_ray_color(bouncing_ray, all_spheres, depth - 1), 0.5);
   }
   // background
   vec3 unit_direction = v3_normalize(r.dir);

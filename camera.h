@@ -10,6 +10,7 @@ typedef struct
   int image_height;
 
   int samples_per_pixel;
+  int max_depth;
 
   // internals
   point3 center;
