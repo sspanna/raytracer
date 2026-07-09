@@ -17,6 +17,9 @@ bin:
 image.ppm: bin/raytracer
 	./bin/raytracer > image.ppm
 
+print: bin/raytracer
+	./bin/raytracer
+
 .PHONY: run clean test
 
 run: image.ppm

@@ -1,8 +1,8 @@
 #include "camera.h"
 #include "sphere_list.h"
+#include "utils.h"
 #include "vec3.h"
 #include <unistd.h>
-
 // @return t - parameter solution of intersecting point, or -1 for miss
 int main(void)
 {
@@ -29,7 +29,7 @@ int main(void)
   camera cam;
   cam.aspect_ratio = 16.0 / 9.0;
   cam.image_width = 400;
-
+  cam.samples_per_pixel = 100;
   camera_initialize(&cam);
   // camera_print(cam);
   camera_render(cam, all_spheres);

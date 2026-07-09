@@ -1,6 +1,4 @@
 #pragma once
-#include "color.h"
-#include "ray.h"
 #include "sphere_list.h"
 #include "vec3.h"
 #include <stdio.h>
@@ -10,6 +8,8 @@ typedef struct
   double aspect_ratio;
   int image_width;
   int image_height;
+
+  int samples_per_pixel;
 
   // internals
   point3 center;

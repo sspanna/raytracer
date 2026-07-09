@@ -1,8 +1,27 @@
 #include "camera.h"
+#include "color.h"
+#include "utils.h"
 #include "vec3.h"
 #include <math.h>
 
 static color camera_ray_color(const ray r, const sphere_list all_spheres);
+
+vec3 camera_sample_square()
+{
+  return (vec3){random_double() - 0.5, random_double() - 0.5, 0};
+}
+
+ray camera_get_ray(camera cam, int i, int j)
+{
+  vec3 offset = camera_sample_square();
+
+  point3 current_pixel =
+      v3_add(cam.pixel_zero, v3_smul(cam.pixel_delta_u, i + offset.x));
+  current_pixel =
+      v3_add(current_pixel, v3_smul(cam.pixel_delta_v, j + offset.y));
+  vec3 ray_direction = v3_sub(current_pixel, cam.center);
+  return (ray){cam.center, ray_direction};
+}
 
 void camera_render(camera cam, const sphere_list all_spheres)
 {
@@ -15,16 +34,16 @@ void camera_render(camera cam, const sphere_list all_spheres)
   {
     fprintf(stderr, "\rScanlines remaining: %d ", cam.image_height - j);
     fflush(stderr);
+
     for (int i = 0; i < cam.image_width; i++)
     {
-      point3 current_pixel =
-          v3_add(cam.pixel_zero, v3_smul(cam.pixel_delta_u, i));
-      current_pixel = v3_add(current_pixel, v3_smul(cam.pixel_delta_v, j));
-      vec3 ray_direction = v3_sub(current_pixel, cam.center);
-      ray r = (ray){cam.center, ray_direction};
-
-      color pixel_color = camera_ray_color(r, all_spheres);
-      write_color(stdout, pixel_color);
+      color pixel_color = (color){0, 0, 0};
+      for (int sample = 0; sample < cam.samples_per_pixel; sample++)
+      {
+        ray r = camera_get_ray(cam, i, j);
+        pixel_color = v3_add(pixel_color, camera_ray_color(r, all_spheres));
+      }
+      write_color(stdout, v3_smul(pixel_color, (1.0 / cam.samples_per_pixel)));
     }
   }
   fprintf(stderr, "\rDone.                    \n");
@@ -32,6 +51,7 @@ void camera_render(camera cam, const sphere_list all_spheres)
 
 void camera_initialize(camera *cam)
 {
+  cam->samples_per_pixel = 10;
   cam->image_height = (int)(cam->image_width / cam->aspect_ratio);
   cam->image_height = (cam->image_height < 1) ? 1 : cam->image_height;
 
