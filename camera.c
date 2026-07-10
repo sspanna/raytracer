@@ -94,9 +94,10 @@ static color camera_ray_color(const ray r, const sphere_list all_spheres,
     return (color){0, 0, 0};
   }
   hit_record rec;
-  if (sphere_list_hit(all_spheres, r, (interval){0, INFINITY}, &rec))
+  if (sphere_list_hit(all_spheres, r, (interval){0.001, INFINITY}, &rec))
   {
-    vec3 d = v3_random_on_hemisphere(rec.normal);
+    vec3 d = v3_add(rec.normal, v3_random_unit_vector());
+    // vec3 d = v3_random_on_hemisphere(rec.normal);
     ray bouncing_ray = (ray){
         rec.p,
         d,
