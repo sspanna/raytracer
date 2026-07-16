@@ -22,6 +22,7 @@ typedef struct
     struct
     {
       color albedo;
+      double fuzz;
     } metal;
   };
 } material;

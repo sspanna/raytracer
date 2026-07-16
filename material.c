@@ -23,9 +23,12 @@ _Bool material_scatter(material mat, ray r_in, const struct hit_record *rec,
   case MATERIAL_METAL:
   {
     vec3 reflected = v3_reflect(r_in.dir, rec->normal);
+    reflected = v3_normalize(reflected);
+    reflected =
+        v3_add(reflected, v3_smul(v3_random_unit_vector(), mat.metal.fuzz));
     *scattered = (ray){rec->p, reflected};
     *attenuation = mat.metal.albedo;
-    return 1;
+    return v3_dot(scattered->dir, rec->normal) > 0;
   }
   }
 

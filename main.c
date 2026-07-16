@@ -10,7 +10,13 @@ int main(void)
 {
   material mat_ground = (material){MATERIAL_LAMBERTIAN, (color){0.8, 0.8, 0.0}};
   material mat_center = (material){MATERIAL_LAMBERTIAN, (color){0.1, 0.2, 0.5}};
-  material mat_right = (material){MATERIAL_METAL, (color){0.8, 0.6, 0.2}};
+  material mat_left = (material){
+      MATERIAL_METAL, .metal = {.albedo = (color){0.8, 0.6, 0.2}, .fuzz = 0.7}};
+  material mat_right =
+      (material){MATERIAL_METAL, .metal = {
+                                     .albedo = (color){0.8, 0.6, 0.2},
+                                     .fuzz = 0.1,
+                                 }};
   // make some spheres
   sphere sphere1 = (sphere){
       (point3){0, 0, -1},
@@ -28,10 +34,17 @@ int main(void)
       mat_right,
   };
 
+  sphere sphere4 = (sphere){
+      (point3){-1, 0.3, -1},
+      0.5,
+      mat_left,
+  };
+
   sphere_list all_spheres = sphere_list_new(10);
   sphere_list_add(&all_spheres, sphere1);
   sphere_list_add(&all_spheres, sphere2);
   sphere_list_add(&all_spheres, sphere3);
+  sphere_list_add(&all_spheres, sphere4);
 
   // Camera
   camera cam;
