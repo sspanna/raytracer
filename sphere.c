@@ -32,6 +32,6 @@ _Bool sphere_hit(sphere s, ray r, interval ray_t, hit_record *rec)
   rec->p = ray_at(r, root);
   vec3 outward_normal = v3_sdiv(v3_sub(rec->p, s.center), s.radius);
   set_face_normal(rec, r, outward_normal);
-
+  rec->mat = s.mat;
   return 1;
 }

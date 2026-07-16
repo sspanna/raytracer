@@ -112,3 +112,15 @@ vec3 v3_random_on_hemisphere(vec3 normal)
     return v3_neg(v);
   }
 }
+
+_Bool v3_near_zero(vec3 u)
+{
+  double s = 1e-8;
+  return fabs(u.x) < s && fabs(u.y) < s && fabs(u.z) < s;
+}
+
+vec3 v3_reflect(vec3 u, vec3 n)
+{
+  vec3 two_b = v3_smul(n, -2 * v3_dot(u, n));
+  return v3_add(u, two_b);
+}

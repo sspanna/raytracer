@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "color.h"
+#include "material.h"
 #include "utils.h"
 #include "vec3.h"
 #include <math.h>
@@ -96,13 +97,23 @@ static color camera_ray_color(const ray r, const sphere_list all_spheres,
   hit_record rec;
   if (sphere_list_hit(all_spheres, r, (interval){0.001, INFINITY}, &rec))
   {
-    vec3 d = v3_add(rec.normal, v3_random_unit_vector());
+    ray scattered;
+    color attenuation;
+
+    if (material_scatter(rec.mat, r, &rec, &attenuation, &scattered))
+    {
+      return v3_mul(camera_ray_color(scattered, all_spheres, depth - 1),
+                    attenuation);
+    }
+    return (color){0, 0, 0};
+    // vec3 d = v3_add(rec.normal, v3_random_unit_vector());
     // vec3 d = v3_random_on_hemisphere(rec.normal);
-    ray bouncing_ray = (ray){
-        rec.p,
-        d,
-    };
-    return v3_smul(camera_ray_color(bouncing_ray, all_spheres, depth - 1), 0.5);
+    // ray bouncing_ray = (ray){
+    //     rec.p,
+    //     d,
+    // };
+    // return v3_smul(camera_ray_color(bouncing_ray, all_spheres, depth - 1),
+    // 0.5);
   }
   // background
   vec3 unit_direction = v3_normalize(r.dir);

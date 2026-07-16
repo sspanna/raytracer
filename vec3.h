@@ -33,3 +33,7 @@ vec3 v3_random_between(double min, double max);
 vec3 v3_random_unit_vector();
 
 vec3 v3_random_on_hemisphere(vec3 normal);
+
+_Bool v3_near_zero(vec3 u);
+
+vec3 v3_reflect(vec3 u, vec3 n);
